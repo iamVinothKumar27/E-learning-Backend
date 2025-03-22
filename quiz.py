@@ -1,82 +1,53 @@
-from flask import Flask, render_template_string, request
+from flask import Blueprint, render_template_string, request
 import os
 import json
 import re
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-app = Flask(__name__)
+quiz_bp = Blueprint('quiz', __name__)  # 👈 blueprint name
 
-# Load environment variables
 load_dotenv()
-
 GOOGLE_API_KEY = "AIzaSyA1-425hbFs_LxQmwDvXADI3wL_3yqlJkQ"
-if not GOOGLE_API_KEY:
-    print("GOOGLE_API_KEY not found. Please make sure it is set in the .env file.")
-    exit(1)
 
-# Initialize the Chat model using gemini-2.0-flash
 model = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.5, google_api_key=GOOGLE_API_KEY)
 
-# Read the video transcript details from the JSON file
-file_path = "C:/Users/gokul/HackFest/gps/src/backend/video_details/video_details_Web Development.json"
-try:
-    with open(file_path, "r", encoding="utf-8") as file:
-        video_details = json.load(file)  # Properly load JSON data
-except FileNotFoundError:
-    print(f"Error: File not found at {file_path}")
-    exit(1)
-except json.JSONDecodeError:
-    print(f"Error: Failed to decode JSON from {file_path}")
-    exit(1)
+file_path = "video_details/video_details_Mobile App Development.json"
+with open(file_path, "r", encoding="utf-8") as file:
+    video_details = json.load(file)
 
-# Combine transcripts from all videos
 combined_transcript = "\n".join(item.get("transcript", "") for item in video_details)
 
-# Define a prompt template for generating a quiz
 prompt_template = """
 You are an expert quiz generator. Based on the transcript provided below about Artificial Intelligence,
 generate a list of 10 multiple-choice questions in **valid JSON format**. The output should be a JSON object **with only the following structure**:
 
-{{
+{
     "questions": [
-        {{
+        {
             "id": 1,
             "text": "What is AI?",
             "options": ["Option A", "Option B", "Option C", "Option D"],
             "correct": "Option A"
-        }},
+        },
         ...
     ]
-}}
+}
 
 Strictly return **only** the JSON object and nothing else. Do not include any introductory or explanatory text.
 Transcript:
 {transcript}
 """
 
-
 formatted_prompt = prompt_template.format(transcript=combined_transcript)
-
-# Invoke the model to generate the quiz
 quiz_response = model.invoke(formatted_prompt)
-
-# Extract the response content
 quiz_text = quiz_response.content if hasattr(quiz_response, "content") else str(quiz_response)
 
-# Ensure the response is valid JSON
 match = re.search(r'\{.*\}', quiz_text, re.DOTALL)
+questions = []
 if match:
-    try:
-        questions = json.loads(match.group())["questions"]
-    except json.JSONDecodeError:
-        print("Error: Extracted content is not valid JSON.")
-        exit(1)
-else:
-    print("Error: No JSON detected in the AI response.")
-    exit(1)
+    questions = json.loads(match.group())["questions"]
 
-# HTML Template
 template = """
 <!DOCTYPE html>
 <html>
@@ -124,15 +95,13 @@ template = """
 </html>
 """
 
-@app.route('/', methods=['GET', 'POST'])
+@quiz_bp.route('/', methods=['GET', 'POST'])
 def quiz():
     feedback = []
-    c=0
     if request.method == 'POST':
         for question in questions:
             question_id = str(question["id"])
             user_answer = request.form.get(f'q{question_id}')
-            
             if user_answer:
                 is_correct = user_answer == question["correct"]
                 feedback.append({
@@ -140,8 +109,4 @@ def quiz():
                     "message": f"Your answer is {'correct' if is_correct else f'incorrect'}",
                     "is_correct": is_correct
                 })
-    
     return render_template_string(template, questions=questions, feedback=feedback)
-
-if __name__ == '__main__':
-    app.run(debug=True,port=5050)

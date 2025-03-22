@@ -156,7 +156,7 @@ def sanitize_filename(name):
 
 # Function to save JSON
 def save_to_json(data, subject):
-    filename = f"C:/Users/gokul/HackFest/gps/src/backend/video_details/video_details_{sanitize_filename(subject)}.json"
+    filename = f"/Users/t.s.vinoth/Desktop/backend/video_details/video_details_{sanitize_filename(subject)}.json"
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 

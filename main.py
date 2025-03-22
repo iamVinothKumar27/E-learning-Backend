@@ -3,7 +3,9 @@ from flask import Flask
 from flask_cors import CORS
 
 # Import route handlers from each file
-from quiz import app as quiz_app
+from quiz import quiz_bp
+
+
 from simulation import app as simulation_app
 from summary import app as summary_app
 from meet2 import app as meet_app
@@ -14,7 +16,8 @@ main_app = Flask(__name__)
 CORS(main_app)  # Enable CORS globally
 
 # Register blueprints or mount sub-apps
-main_app.register_blueprint(quiz_app, url_prefix="/quiz")
+
+main_app.register_blueprint(quiz_bp, url_prefix="/quiz")
 main_app.register_blueprint(simulation_app, url_prefix="/simulation")
 main_app.register_blueprint(summary_app, url_prefix="/summary")
 main_app.register_blueprint(meet_app, url_prefix="/meet")

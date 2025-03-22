@@ -42,7 +42,7 @@ def home():
 
 @app.route("/summarize", methods=["POST"])
 def summarize_json():
-    json_data = read_json("C:/Users/gokul/HackFest/gps/src/backend/video_details/video_details_Web Development.json")
+    json_data = read_json("/Users/t.s.vinoth/Desktop/backend/video_details/video_details_Mobile App Development.json")
 
     if "error" in json_data:
         return jsonify({"error": json_data["error"]}), 500

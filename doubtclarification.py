@@ -6,7 +6,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Define the JSON file containing the transcript
-TRANSCRIPT_FILE = "C:/Users/gokul/HackFest/gps/src/backend/video_details/video_details_Web Development.json"
+TRANSCRIPT_FILE = "/Users/t.s.vinoth/Desktop/backend/video_details/video_details_Mobile App Development.json"
 
 # Function to load transcript from JSON file
 def load_transcript():

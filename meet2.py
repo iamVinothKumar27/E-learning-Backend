@@ -7,7 +7,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Google API Configuration
-SERVICE_ACCOUNT_FILE = "C:/Users/gokul/HackFest/gps/src/backend/service_account.json"  # Ensure this file exists
+SERVICE_ACCOUNT_FILE = "/Users/t.s.vinoth/Desktop/backend/service_account.json"  # Ensure this file exists
 CALENDAR_ID = "ramrakshitha267@gmail.com"  # Replace with your Google Calendar ID
 SPACE_ID = "AAAAWEYV8Gg"  # Replace with your actual Google Chat space ID
 
